@@ -7,15 +7,20 @@ import time
 import datetime
 
 class post:
-	def __init__(self, dict_post, i):
-		self.text = find_group_name(dict_post['groups'], dict_post['items'][i]['source_id']) + ' '
-		self.text += create_href(create_link(dict_post['items'][i]['post_id'], dict_post['items'][i]['source_id']), 'пишетъ')
+	def __init__(self, groups, dict_post, repost = False):
+		self.text = ''
+		
+		if repost == True:
+			self.text += 'ПОСТ ВЫШЕ - РЕПОСТ ЭТОГО ПОСТА\n\n'
+		
+		self.text += find_group_name(groups, dict_post['source_id']) + ' '
+		self.text += create_href(create_link(dict_post['post_id'], dict_post['source_id']), 'пишетъ')
 		self.text += ':\n\n'
-		self.text += dict_post['items'][i]['text']
+		self.text += dict_post['text']
 		
 		self.media = []
-		if 'attachments' in dict_post['items'][i]:
-			for attachment in dict_post['items'][i]['attachments']:
+		if 'attachments' in dict_post:
+			for attachment in dict_post['attachments']:
 				if attachment['type'] == 'photo':
 					link = ''
 					max_size = 0
@@ -102,8 +107,11 @@ def handle_dict(dict):
 	if count > 0:
 		start = dict['items'][0]['date'] + 1 #Потом будем запрашивать посты со следующей секунды после последнего поста в этой пачке
 		while count > 0:
-			if not check_ignore(dict['items'][count - 1]['text']):
-				send_post(post(dict, count - 1))
+			if not check_ignore(dict['items'][count - 1]['text']): #Проверяем игнор лист
+				send_post(post(dict['groups'], dict['items'][count - 1])) #Шлем пост
+				if 'copy_history' in dict: #Если это репост, то шлем всю историю репостов
+					for repost in dict['copy_history']:
+						send_post(post(dict['groups'], repost, repost = True))
 			count -= 1
 		
 def check_ignore(text):
