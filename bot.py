@@ -44,10 +44,21 @@ def send_post(post):
 		elif item.type == 'link':
 			post.text = post.text + '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, прикреплена ссылка: ' + create_href(item.link, item.title)
 			#post.text = post.text + '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, прикреплена ссылка: [' + item.title + '](' + item.link + ')'		
+		elif item.type == 'playlist':
+			post.text += '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеется плейлист ' + item.title
 		elif item.type == 'poll':
 			post.text += '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеется ' + item.link
 		elif item.type == 'wiki':
-			post.text +='\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеется вики-страница: ' + create_href(item.link, item.title)
+			post.text += '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеется вики-страница: ' + create_href(item.link, item.title)
+		elif item.type == 'album':
+			post.text += '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеется фотоальбом: ' + item.title
+		elif item.type == 'market':
+			post.text += '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеется товар: ' + item.title
+		elif item.type == 'market_album':
+			post.text += '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеется подборка: ' + item.title + ' товаров'
+		elif item.type == 'event':
+			post.text += '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеется встреча: ' + item.title
+		
 			
 	if len(audios) > 0:
 		post.text = post.text + '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеются аудио:\n'
@@ -72,7 +83,7 @@ def send_post(post):
 	
 	if len(animations) > 0:
 		for gif in animations:
-			bot.send_animation(my_id, gif.link)
+			bot.send_document(my_id, gif.link)
 			
 	if len(docs) > 0:
 		for doc in docs:
