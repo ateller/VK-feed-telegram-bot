@@ -72,13 +72,13 @@ def send_post(post):
 		post.text = post.text + '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеются докУменты\n'
 	
 	if len(album) == 0:
-		bot.send_message(my_id, post.text, parse_mode = 'HTML')
+		send_even_long_message(post.text)
 	else:
 		if len(post.text) < 1024:
 			album[0].caption = post.text
 			album[0].parse_mode = 'HTML'
 		else:
-			bot.send_message(my_id, post.text, parse_mode = 'HTML')
+			send_even_long_message(post.text)
 		bot.send_media_group(my_id, album)
 	
 	if len(animations) > 0:
@@ -88,6 +88,12 @@ def send_post(post):
 	if len(docs) > 0:
 		for doc in docs:
 			bot.send_document(my_id, doc.link)
+	
+def send_even_long_message(text):
+	while len(text) > 4096:
+		bot.send_message(my_id, text[0:4096], parse_mode = 'HTML')
+		text = text[4096:]
+	bot.send_message(my_id, text, parse_mode = 'HTML')
 	
 apihelper.proxy = {'https':prox_ip} #Спасибо ркн
 bot = telebot.TeleBot(token) 
