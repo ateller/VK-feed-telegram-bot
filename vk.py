@@ -7,13 +7,13 @@ import time
 import datetime
 
 class post:
-	def __init__(self, groups, dict_post, repost = False):
+	def __init__(self, groups, profiles, dict_post, repost = False):
 		self.text = ''
 		
 		if repost == True:
 			self.text += 'ПОСТ ВЫШЕ - РЕПОСТ ЭТОГО ПОСТА\n\n'
 		
-		self.text += find_group_name(groups, dict_post['source_id']) + ' '
+		self.text += find_name(groups, profiles, dict_post['source_id']) + ' '
 		self.text += create_href(create_link(dict_post['post_id'], dict_post['source_id']), 'пишетъ')
 		self.text += ':\n\n'
 		self.text += dict_post['text']
@@ -107,11 +107,12 @@ def handle_dict(dict):
 	if count > 0:
 		start = dict['items'][0]['date'] + 1 #Потом будем запрашивать посты со следующей секунды после последнего поста в этой пачке
 		while count > 0:
+			#pprint.pprint(dict['items'][count - 1])
 			if not check_ignore(dict['items'][count - 1]['text']): #Проверяем игнор лист
-				send_post(post(dict['groups'], dict['items'][count - 1])) #Шлем пост
+				send_post(post(dict['groups'], dict['profiles'], dict['items'][count - 1])) #Шлем пост
 				if 'copy_history' in dict: #Если это репост, то шлем всю историю репостов
 					for repost in dict['copy_history']:
-						send_post(post(dict['groups'], repost, repost = True))
+						send_post(post(dict['groups'], dict['profiles'], repost, repost = True))
 			count -= 1
 		
 def check_ignore(text):
@@ -121,11 +122,16 @@ def check_ignore(text):
 	return False
 #Список слов, которые я не хочу видеть у себя в ленте
 	
-def find_group_name(groups, id):
+def find_name(groups, profiles, id):
 	for group in groups:
 		if group['id'] == -id:
 			return group['name']
-#В списке групп ищем ту, у которой нужный id
+	#В списке групп ищем ту, у которой нужный id
+	for user in profiles:
+		if user['id'] == id:
+			return user['first_name'] + ' ' + user['last_name']
+	#Если не нашли, это человеческий пост, ищем человека
+
 			
 def check_wall():
 	while True:
@@ -149,7 +155,7 @@ thread2 = Thread(target=check_down, daemon=True) #Можно проверять 
 
 thread1.start()
 thread2.start()
-thread1.join() #Если вылетает первый поток, он присоединяется и скрипт завершается, а первый демон
+thread1.join() #Если вылетает первый поток, он присоединяется и скрипт завершается, а второй демон
 
 #check_wall()
 
