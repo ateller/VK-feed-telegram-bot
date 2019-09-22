@@ -12,9 +12,12 @@ class post:
 		
 		if repost == True:
 			self.text += 'ПОСТ ВЫШЕ - РЕПОСТ ЭТОГО ПОСТА\n\n'
+			self.text += find_name(groups, profiles, dict_post['from_id']) + ' '
+			self.text += create_href(create_link(dict_post['id'], dict_post['from_id']), 'пишетъ')
+		else:
+			self.text += find_name(groups, profiles, dict_post['source_id']) + ' '
+			self.text += create_href(create_link(dict_post['post_id'], dict_post['source_id']), 'пишетъ')
 		
-		self.text += find_name(groups, profiles, dict_post['source_id']) + ' '
-		self.text += create_href(create_link(dict_post['post_id'], dict_post['source_id']), 'пишетъ')
 		self.text += ':\n\n'
 		self.text += dict_post['text']
 		
@@ -56,10 +59,10 @@ class post:
 					
 					#Извиняюсь за то, что просто сую весь текст в линк
 					
-					poll.link += attachment['poll']['question'] + '\". Проголосовало ' + attachment['poll']['votes'] + ' человек:\n'
+					poll.link += attachment['poll']['question'] + '\". Проголосовало ' + str(attachment['poll']['votes']) + ' человек:\n'
 					
 					for answ in attachment['poll']['answers']:
-						poll.link += '\t - ' + answ['text'] + ' - ' + answ['votes'] + '\n'
+						poll.link += '\t - ' + answ['text'] + ' - ' + str(answ['votes']) + '\n'
 					
 					if attachment['poll']['closed']:
 						poll.link += 'Опрос завершен'
@@ -108,10 +111,11 @@ def handle_dict(dict):
 		start = dict['items'][0]['date'] + 1 #Потом будем запрашивать посты со следующей секунды после последнего поста в этой пачке
 		while count > 0:
 			#pprint.pprint(dict['items'][count - 1])
-			if not check_ignore(dict['items'][count - 1]['text']): #Проверяем игнор лист
-				send_post(post(dict['groups'], dict['profiles'], dict['items'][count - 1])) #Шлем пост
-				if 'copy_history' in dict: #Если это репост, то шлем всю историю репостов
-					for repost in dict['copy_history']:
+			temp = dict['items'][count - 1] #Текущий пост
+			if not check_ignore(temp['text']): #Проверяем игнор лист
+				send_post(post(dict['groups'], dict['profiles'], temp)) #Шлем пост
+				if 'copy_history' in temp: #Если это репост, то шлем всю историю репостов
+					for repost in temp['copy_history']:
 						send_post(post(dict['groups'], dict['profiles'], repost, repost = True))
 			count -= 1
 		
