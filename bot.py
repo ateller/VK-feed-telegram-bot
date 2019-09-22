@@ -63,7 +63,7 @@ def send_post(post):
 	if len(audios) > 0:
 		post.text = post.text + '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеются аудио:\n'
 		for audio in audios:
-			post.text = post.text + audio.author + ' - ' + audio.title
+			post.text = post.text + audio.author + ' - ' + audio.title + '\n'
 	
 	if len(animations) > 0:
 		post.text = post.text + '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеются гифки\n'
@@ -107,11 +107,11 @@ def check_down():
 	def is_down(message):
 		if (message.text.lower().find('упал') != -1) and (message.text[-1] == '?'):
 			bot.send_message(my_id, 'Не упал')
-		elif message.text.lower().find('падай') != 1:
+		elif message.text.lower().find('падай') != -1:
 			bot.send_photo(my_id, 'https://pbs.twimg.com/media/DwVI7QBWkAEsY1g.jpg')
 			os._exit(0)
 
-	bot.polling()
+	bot.polling(none_stop = True, interval = 0, timeout = 20)
 
 #updates = bot.get_updates()
 #print(updates[0].message.from_user.id)
