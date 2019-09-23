@@ -11,7 +11,7 @@ def two_fact():	#Ввод кода двухфакторной аутентифи
 	auth_args = []
 	
 	global handler_mode
-	handler_mode == 'two_factor'
+	handler_mode = 'two_factor'
 	
 	bot.send_message(my_id, 'СЛЫШ ВВОДИ') #Приглашаем пользователя (меня) ввести код
 	
