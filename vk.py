@@ -1,7 +1,7 @@
 import vk_api
 import pprint
 from config import login, passw, ignore #Должен быть файл config.py, в нем логин, пароль от вк, список слов для игнора, токен бота, id чата, куда все скидывать и айпи прокси
-from bot import two_fact, send_post, check_down, create_href
+from bot import two_fact, send_post, check_down, create_href, get_log_pass
 from threading import Thread
 import time
 import datetime
@@ -143,7 +143,9 @@ def check_wall():
 		time.sleep(1)
 #Раз в секунду просим новые посты
 	
-vk_session = vk_api.VkApi(login, passw, auth_handler = two_fact)
+#vk_session = vk_api.VkApi(login, passw, auth_handler = two_fact)
+log_pass = get_log_pass()
+vk_session = vk_api.VkApi(log_pass[0], log_pass[1], auth_handler = two_fact)
 vk_session.auth()
 #Создаем сессию
 

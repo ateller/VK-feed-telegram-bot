@@ -99,8 +99,29 @@ apihelper.proxy = {'https':prox_ip} #Спасибо ркн
 bot = telebot.TeleBot(token) 
 print(bot.get_me()) #Проверка, что мы справились с ркн
 
+upd = bot.get_updates()
+if len(upd) > 0:
+	bot.get_updates(upd[-1].update_id + 1) #Пропускаем всё, что пришло, пока бот лежал
+
 def create_href(link, text):
-	return '<a href=\"' + link + '\">' + text + '</a>'	
+	return '<a href=\"' + link + '\">' + text + '</a>'
+	
+def get_log_pass():
+	log_pass = []
+
+	@bot.message_handler(content_types=['text']) #Штука, которая примет логин и пароль	
+	def get_log_pass_from_message(message):
+		if message.from_user.id == my_id:
+			log_pass.extend(message.text.split('\n', 2))
+			bot.delete_message(my_id, message.message_id)
+			bot.stop_polling() #Выключаем ожидание
+
+	bot.send_message(my_id, 'СЛЫШ ВВОДИ ИХ') #Приглашаем пользователя (меня) ввести
+	
+	bot.polling() #Ожидаем
+	
+	bot.send_message(my_id, 'ПРИНЯТО')
+	return log_pass
 
 def check_down():
 	@bot.message_handler(content_types=['text'])
