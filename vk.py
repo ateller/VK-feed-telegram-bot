@@ -143,9 +143,9 @@ def check_wall():
 		time.sleep(1)
 #Раз в секунду просим новые посты
 	
-#vk_session = vk_api.VkApi(login, passw, auth_handler = two_fact)
-log_pass = get_log_pass()
-vk_session = vk_api.VkApi(log_pass[0], log_pass[1], auth_handler = two_fact)
+vk_session = vk_api.VkApi(login, passw, auth_handler = two_fact)
+#log_pass = get_log_pass()
+#vk_session = vk_api.VkApi(log_pass[0], log_pass[1], auth_handler = two_fact)
 vk_session.auth()
 #Создаем сессию
 
