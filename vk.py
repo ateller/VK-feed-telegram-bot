@@ -149,8 +149,6 @@ vk_session.auth()
 
 vk = vk_session.get_api() #Получаем доступ к методам
 
-pprint.pprint(vk.newsfeed.get(filters = 'post', return_banned = 0, start_time = 1568572461, count = 1)) #Печатаем в терминал последнюю запись. Просто чтобы была
-
 start = 1568572461 #Рандомное время
 handle_dict(vk.newsfeed.get(filters = 'post', return_banned = 0, start_time = start, count = 1)) #Прогоняем последнюю, чтобы время установилось
 

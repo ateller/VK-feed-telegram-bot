@@ -1,9 +1,8 @@
 import telebot
 import os
 
-from telebot import apihelper
-from config import token, prox_ip, my_id
-from telebot.types import InputMediaPhoto, InputMediaVideo, InputMediaAnimation, InputMediaAudio, InputMediaDocument
+from config import token, my_id
+from telebot.types import InputMediaPhoto
 
 def two_fact():	#Ввод кода двухфакторной аутентификации в чате бота
 	auth_args = [] #Лист аргументов для функции
