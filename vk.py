@@ -141,9 +141,10 @@ def check_wall():
 		handle_dict(vk.newsfeed.get(filters = 'post', return_banned = 0, start_time = start))
 		time.sleep(1)
 #Раз в секунду просим новые посты
-	
+
 log_pass = get_log_pass()
 vk_session = vk_api.VkApi(log_pass[0], log_pass[1], auth_handler = two_fact)
+
 vk_session.auth()
 #Создаем сессию
 

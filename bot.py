@@ -5,15 +5,13 @@ from config import token, my_id
 from telebot.types import InputMediaPhoto
 
 def two_fact():	#Ввод кода двухфакторной аутентификации в чате бота
-	auth_args = [] #Лист аргументов для функции
 
-	@bot.message_handler(content_types=['text']) #Штука, которая примет код
-	def get_auth_code_from_message(message):
-		if message.from_user.id == my_id:
-			auth_args.append(message.text)
-			bot.delete_message(my_id, message.message_id)
-			bot.stop_polling() #Выключаем ожидание
-
+	global auth_args
+	auth_args = []
+	
+	global handler_mode
+	handler_mode == 'two_factor'
+	
 	bot.send_message(my_id, 'СЛЫШ ВВОДИ') #Приглашаем пользователя (меня) ввести код
 	
 	bot.polling() #Ожидаем
@@ -92,41 +90,55 @@ def send_even_long_message(text):
 		bot.send_message(my_id, text[0:4096], parse_mode = 'HTML')
 		text = text[4096:]
 	bot.send_message(my_id, text, parse_mode = 'HTML')
-	
+
+handler_mode = ''
+auth_args = [] #Лист аргументов для функции
+
 bot = telebot.TeleBot(token) 
 print(bot.get_me()) #Проверка, что работает
 
 upd = bot.get_updates()
 if len(upd) > 0:
 	bot.get_updates(upd[-1].update_id + 1) #Пропускаем всё, что пришло, пока бот лежал
+	
+@bot.message_handler(content_types=['text']) #Штука, которая примет код
+def handle_everything(message):
+	if message.from_user.id == my_id:
+		if handler_mode == 'two_factor':
+			auth_args.append(message.text)
+			bot.delete_message(my_id, message.message_id)
+			bot.stop_polling() #Выключаем ожидание
+		elif handler_mode == 'log_pass':
+			auth_args.extend(message.text.split('\n', 2))
+			print(auth_args)
+			bot.delete_message(my_id, message.message_id)
+			bot.stop_polling() #Выключаем ожидание
+		elif handler_mode == 'check_down':
+			if ('упал' in message.text.lower()) and (message.text[-1] == '?'):
+				bot.send_message(my_id, 'Не упал')
+			elif 'падай' in message.text.lower():
+				bot.send_photo(my_id, 'https://pbs.twimg.com/media/DwVI7QBWkAEsY1g.jpg')
+				os._exit(0)
 
 def create_href(link, text):
 	return '<a href=\"' + link + '\">' + text + '</a>'
 	
 def get_log_pass():
-	log_pass = []
-
-	@bot.message_handler(content_types=['text']) #Штука, которая примет логин и пароль	
-	def get_log_pass_from_message(message):
-		if message.from_user.id == my_id:
-			log_pass.extend(message.text.split('\n', 2))
-			bot.delete_message(my_id, message.message_id)
-			bot.stop_polling() #Выключаем ожидание
-
+	global auth_args
+	auth_args = []
+	
+	global handler_mode
+	handler_mode = 'log_pass'
+	
 	bot.send_message(my_id, 'СЛЫШ ВВОДИ ИХ') #Приглашаем пользователя (меня) ввести
 	
 	bot.polling() #Ожидаем
 	
 	bot.send_message(my_id, 'ПРИНЯТО')
-	return log_pass
+	return auth_args
 
 def check_down():
-	@bot.message_handler(content_types=['text'])
-	def is_down(message):
-		if (message.text.lower().find('упал') != -1) and (message.text[-1] == '?'):
-			bot.send_message(my_id, 'Не упал')
-		elif message.text.lower().find('падай') != -1:
-			bot.send_photo(my_id, 'https://pbs.twimg.com/media/DwVI7QBWkAEsY1g.jpg')
-			os._exit(0)
+	global handler_mode
+	handler_mode = 'check_down'
 
 	bot.polling(none_stop = True, interval = 0, timeout = 20)
