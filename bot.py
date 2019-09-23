@@ -1,9 +1,8 @@
 import telebot
 import os
 
-from telebot import apihelper
-from config import token, prox_ip, my_id
-from telebot.types import InputMediaPhoto, InputMediaVideo, InputMediaAnimation, InputMediaAudio, InputMediaDocument
+from config import token, my_id
+from telebot.types import InputMediaPhoto
 
 def two_fact():	#Ввод кода двухфакторной аутентификации в чате бота
 
@@ -31,7 +30,6 @@ def send_post(post):
 		if item.type == 'photo':
 			album.append(InputMediaPhoto(item.link))
 		elif item.type == 'video':
-			#post.text = post.text + '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеется видосик: ' + item.title + ' ' + item.link
 			post.text = post.text + '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеется видосик: ' + create_href(item.link, item.title)
 		elif item.type == 'audio':
 			audios.append(item)
@@ -96,9 +94,8 @@ def send_even_long_message(text):
 handler_mode = ''
 auth_args = [] #Лист аргументов для функции
 
-apihelper.proxy = {'https':prox_ip} #Спасибо ркн
 bot = telebot.TeleBot(token) 
-print(bot.get_me()) #Проверка, что мы справились с ркн
+print(bot.get_me()) #Проверка, что работает
 
 upd = bot.get_updates()
 if len(upd) > 0:
