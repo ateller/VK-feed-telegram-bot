@@ -47,7 +47,7 @@ class post:
 						self.media.append(media(attachment['doc']['url'], 'doc', title = attachment['doc']['title']))
 				elif attachment['type'] == 'link':
 					if attachment['link']['description'] == 'Плейлист':
-						self.media.append(media('', 'playlist', title = attachment['link']['title']))
+						self.media.append(media(attachment['link']['url'], 'playlist', title = attachment['link']['title']))
 					else:
 						self.media.append(media(attachment['link']['url'], 'link', title = attachment['link']['title']))
 				elif attachment['type'] == 'poll':
@@ -67,7 +67,7 @@ class post:
 					if attachment['poll']['closed']:
 						poll.link += 'Опрос завершен'
 					elif attachment['poll']['multiple']:
-						poll.link += 'Можно выбрать несколько вариантов ответа до'
+						poll.link += 'Можно выбрать несколько вариантов ответа'
 					else: 
 						poll.link += 'Можно выбрать oдин вариант ответа'
 						

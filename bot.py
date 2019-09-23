@@ -45,7 +45,7 @@ def send_post(post):
 			post.text = post.text + '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, прикреплена ссылка: ' + create_href(item.link, item.title)
 			#post.text = post.text + '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, прикреплена ссылка: [' + item.title + '](' + item.link + ')'		
 		elif item.type == 'playlist':
-			post.text += '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеется плейлист ' + item.title
+			post.text += '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеется плейлист ' + create_href(item.link, item.title)
 		elif item.type == 'poll':
 			post.text += '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеется ' + item.link
 		elif item.type == 'wiki':
