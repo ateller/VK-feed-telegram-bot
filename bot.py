@@ -133,15 +133,3 @@ def check_down():
 			os._exit(0)
 
 	bot.polling(none_stop = True, interval = 0, timeout = 20)
-
-#updates = bot.get_updates()
-#print(updates[0].message.from_user.id)
-
-#bot.send_message(my_id, 'дарова')
-
-#album = []
-#album.append(InputMediaPhoto('https://sun9-62.userapi.com/c855324/v855324525/f1855/wnRgTdrHv7E.jpg', 'привет'))
-#album.append(InputMediaPhoto('https://sun9-62.userapi.com/c855324/v855324525/f1855/wnRgTdrHv7E.jpg'))
-
-#bot.send_photo(my_id, 'https://sun9-62.userapi.com/c855324/v855324525/f1855/wnRgTdrHv7E.jpg', 'привет дворяне')
-#bot.send_media_group(my_id, album);

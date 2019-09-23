@@ -162,9 +162,3 @@ thread2 = Thread(target=check_down, daemon=True) #Можно проверять 
 thread1.start()
 thread2.start()
 thread1.join() #Если вылетает первый поток, он присоединяется и скрипт завершается, а второй демон
-
-#check_wall()
-
-#start = vk.newsfeed.get(filters = 'post', return_banned = 0, start_time = 1568572461, count = 1)['next_from']
-
-#send_post(get_post)
