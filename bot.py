@@ -113,7 +113,6 @@ def handle_everything(message):
 			bot.stop_polling() #Выключаем ожидание
 		elif handler_mode == 'log_pass':
 			auth_args.extend(message.text.split('\n', 2))
-			print(auth_args)
 			bot.delete_message(my_id, message.message_id)
 			bot.stop_polling() #Выключаем ожидание
 		elif handler_mode == 'check_down':

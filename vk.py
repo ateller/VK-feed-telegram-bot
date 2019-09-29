@@ -5,6 +5,7 @@ from bot import two_fact, send_post, check_down, create_href, get_log_pass
 from threading import Thread
 import time
 import datetime
+import re
 
 class post:
 	def __init__(self, groups, profiles, dict_post, repost = False):
@@ -19,7 +20,7 @@ class post:
 			self.text += create_href(create_link(dict_post['post_id'], dict_post['source_id']), 'пишетъ')
 		
 		self.text += ':\n\n'
-		self.text += dict_post['text']
+		self.text += replace_vk_hidden_links(dict_post['text'])
 		
 		self.media = []
 		if 'attachments' in dict_post:
@@ -99,6 +100,15 @@ class media:
 def create_link(post_id, group_id):
 	link = 'https://vk.com/wall' + str(group_id) + '_' + str(post_id) #Делаем ссылку на группу
 	return link
+	
+def replace_vk_hidden_links(text):
+	parsed = re.findall(r'\[.*?\|.*?\]', text)
+	parsed = set(parsed)
+	for item in parsed:
+		splited = item.split('|')
+		text = text.replace(item, create_href('https://vk.com/' + splited[0][1:], splited[1][:-1]))
+	return text
+		
 	
 def utc_3(dt):
 	dt.hour += 3
