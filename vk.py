@@ -1,10 +1,11 @@
 import vk_api
 import pprint
-from config import ignore #Должен быть файл config.py, в нем логин, пароль от вк, список слов для игнора, токен бота, id чата, куда все скидывать и айпи прокси
-from bot import two_fact, send_post, check_down, create_href, get_log_pass
+from config import ignore #Должен быть файл config.py, в нем список слов для игнора, токен бота и id чата, куда все скидывать
+from bot import two_fact, send_post, check_down, create_href, get_log_pass, alarm
 from threading import Thread
 import time
 import datetime
+import re
 
 class post:
 	def __init__(self, groups, profiles, dict_post, repost = False):
@@ -12,14 +13,17 @@ class post:
 		
 		if repost == True:
 			self.text += 'ПОСТ ВЫШЕ - РЕПОСТ ЭТОГО ПОСТА\n\n'
-			self.text += find_name(groups, profiles, dict_post['from_id']) + ' '
-			self.text += create_href(create_link(dict_post['id'], dict_post['from_id']), 'пишетъ')
+			self.source_name = find_name(groups, profiles, dict_post['from_id'])
+			self.link = create_link(dict_post['id'], dict_post['from_id'])
 		else:
-			self.text += find_name(groups, profiles, dict_post['source_id']) + ' '
-			self.text += create_href(create_link(dict_post['post_id'], dict_post['source_id']), 'пишетъ')
+			self.source_name = find_name(groups, profiles, dict_post['source_id'])
+			self.link = create_link(dict_post['post_id'], dict_post['source_id'])
+		
+		self.text += self.source_name + ' '
+		self.text += create_href(self.link, 'пишетъ')
 		
 		self.text += ':\n\n'
-		self.text += dict_post['text']
+		self.text += replace_vk_hidden_links(dict_post['text'])
 		
 		self.media = []
 		if 'attachments' in dict_post:
@@ -100,6 +104,15 @@ def create_link(post_id, group_id):
 	link = 'https://vk.com/wall' + str(group_id) + '_' + str(post_id) #Делаем ссылку на группу
 	return link
 	
+def replace_vk_hidden_links(text):
+	parsed = re.findall(r'\[.*?\|.*?\]', text)
+	parsed = set(parsed)
+	for item in parsed:
+		splited = item.split('|')
+		text = text.replace(item, create_href('https://vk.com/' + splited[0][1:], splited[1][:-1]))
+	return text
+		
+	
 def utc_3(dt):
 	dt.hour += 3
 	return dt
@@ -138,7 +151,12 @@ def find_name(groups, profiles, id):
 			
 def check_wall():
 	while True:
-		handle_dict(vk.newsfeed.get(filters = 'post', return_banned = 0, start_time = start))
+		try:
+			handle_dict(vk.newsfeed.get(filters = 'post', return_banned = 0, start_time = start))
+		except Exception as e:
+			alarm(e)
+			time.sleep(60)
+			handle_dict(vk.newsfeed.get(filters = 'post', return_banned = 0, start_time = start))
 		time.sleep(1)
 #Раз в секунду просим новые посты
 

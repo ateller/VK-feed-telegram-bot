@@ -19,6 +19,14 @@ def two_fact():	#Ввод кода двухфакторной аутентифи
 	bot.send_message(my_id, 'ПРИНЯТО')
 	auth_args.append(False) #Второй аргумент
 	return auth_args
+	
+def alarm(ex, link = None):
+	print(str(ex))
+	if link is None:
+		text = str(ex)
+	else:
+		text = "Ошибка при отправке поста " + link + '\n\n' + str(ex)
+	bot.send_even_long_message(text)
 
 def send_post(post):
 	album = []
@@ -67,23 +75,26 @@ def send_post(post):
 	if len(docs) > 0:
 		post.text = post.text + '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеются докУменты\n'
 	
-	if len(album) == 0:
-		send_even_long_message(post.text)
-	else:
-		if len(post.text) < 1024:
-			album[0].caption = post.text
-			album[0].parse_mode = 'HTML'
-		else:
+	try:
+		if len(album) == 0:
 			send_even_long_message(post.text)
-		bot.send_media_group(my_id, album)
-	
-	if len(animations) > 0:
-		for gif in animations:
-			bot.send_document(my_id, gif.link)
+		else:
+			if len(post.text) < 1024:
+				album[0].caption = post.text
+				album[0].parse_mode = 'HTML'
+			else:
+				send_even_long_message(post.text)
+			bot.send_media_group(my_id, album)
+		
+		if len(animations) > 0:
+			for gif in animations:
+				bot.send_document(my_id, gif.link)
 			
-	if len(docs) > 0:
-		for doc in docs:
-			bot.send_document(my_id, doc.link)
+		if len(docs) > 0:
+			for doc in docs:
+				bot.send_document(my_id, doc.link)
+	except Exception as e:
+		alarm(e, create_href(post.link, post.source_name))
 	
 def send_even_long_message(text):
 	while len(text) > 4096:
@@ -110,7 +121,6 @@ def handle_everything(message):
 			bot.stop_polling() #Выключаем ожидание
 		elif handler_mode == 'log_pass':
 			auth_args.extend(message.text.split('\n', 2))
-			print(auth_args)
 			bot.delete_message(my_id, message.message_id)
 			bot.stop_polling() #Выключаем ожидание
 		elif handler_mode == 'check_down':
