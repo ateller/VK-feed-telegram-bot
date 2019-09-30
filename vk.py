@@ -1,8 +1,9 @@
 import vk_api
 import pprint
-from config import login, passw, ignore #Должен быть файл config.py, в нем логин, пароль от вк, список слов для игнора, токен бота, id чата, куда все скидывать и айпи прокси
-from bot import two_fact, send_post, check_down, create_href, get_log_pass, alarm
+from config import login, passw, ignore, my_id #Должен быть файл config.py, в нем логин, пароль от вк, список слов для игнора, токен бота, id чата, куда все скидывать, ключ и токен от покета и айпи прокси
+from bot import bot, two_fact, send_post, check_down, create_href, get_log_pass, alarm, create_markup
 from threading import Thread
+from getpocket import p
 import time
 import datetime
 import re
@@ -100,6 +101,36 @@ class media:
 		self.title = title
 		self.author = author
 		
+@bot.callback_query_handler(func = lambda call: True)
+def button_handler(call):
+	if call.from_user.id == my_id:
+		try:
+			if call.data[0] == 'l':
+				ids = call.data[2:].split('_')
+				source_id = int(ids[0])
+				post_id = int(ids[1])
+				if vk.likes.isLiked(type = 'post', owner_id = source_id, item_id = post_id)['liked'] == 0:	#Если запись не лайкнута
+					if call.data[1] == 'n':																	#И кнопка соотвествует
+						vk.likes.add(type = 'post', owner_id = source_id, item_id = post_id)				#То лайкаем, и меняем кнопку
+						bot.edit_message_reply_markup(my_id, call.message.message_id, reply_markup = create_markup(call.data[2:], liked = True))
+						bot.answer_callback_query(call.id, 'Лайкнуто')
+					elif call.data[1] == 'y':																#А если кнопка лжет, приводим кнопку в соответствие и уведомляем. Ниже аналогично
+						bot.edit_message_reply_markup(my_id, call.message.message_id, reply_markup = create_markup(call.data[2:], liked = False))
+						bot.answer_callback_query(call.id, 'А ты уже убрал лайк в вк, лол')
+				else:
+					if call.data[1] == 'y':
+						vk.likes.delete(type = 'post', owner_id = source_id, item_id = post_id)
+						bot.edit_message_reply_markup(my_id, call.message.message_id, reply_markup = create_markup(call.data[2:], liked = False))
+						bot.answer_callback_query(call.id, 'Лайк убран')
+					elif call.data[1] == 'n':
+						bot.edit_message_reply_markup(my_id, call.message.message_id, reply_markup = create_markup(call.data[2:], liked = True))
+						bot.answer_callback_query(call.id, 'А ты уже лайкнул в вк, лол')
+			elif call.data[0] == 'p':
+				p.add('https://vk.com/wall' + call.data[1:])
+				bot.answer_callback_query(call.id, 'Добавлено в покет')
+		except Exception as e:
+			alarm(e)
+		
 def create_link(post_id, group_id):
 	link = 'https://vk.com/wall' + str(group_id) + '_' + str(post_id) #Делаем ссылку на группу
 	return link
@@ -111,7 +142,6 @@ def replace_vk_hidden_links(text):
 		splited = item.split('|')
 		text = text.replace(item, create_href('https://vk.com/' + splited[0][1:], splited[1][:-1]))
 	return text
-		
 	
 def utc_3(dt):
 	dt.hour += 3
