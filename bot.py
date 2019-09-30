@@ -2,7 +2,7 @@ import telebot
 import os
 
 from config import token, my_id
-from telebot.types import InputMediaPhoto
+from telebot.types import InputMediaPhoto, InlineKeyboardMarkup, InlineKeyboardButton
 
 def two_fact():	#Ввод кода двухфакторной аутентификации в чате бота
 
@@ -26,7 +26,7 @@ def alarm(ex, link = None):
 		text = str(ex)
 	else:
 		text = "Ошибка при отправке поста " + link + '\n\n' + str(ex)
-	bot.send_even_long_message(text)
+	send_even_long_message(text)
 
 def send_post(post):
 	album = []
@@ -75,32 +75,43 @@ def send_post(post):
 	if len(docs) > 0:
 		post.text = post.text + '\n\nАНТОН, ОБРАТИ ВНИМАНИЕ, имеются докУменты\n'
 	
+	last = 0 #id последнего сообщения, относящегося к посту
 	try:
 		if len(album) == 0:
-			send_even_long_message(post.text)
+			last = send_even_long_message(post.text)
 		else:
 			if len(post.text) < 1024:
 				album[0].caption = post.text
 				album[0].parse_mode = 'HTML'
 			else:
 				send_even_long_message(post.text)
-			bot.send_media_group(my_id, album)
+			last = bot.send_media_group(my_id, album)[-1].message_id
 		
 		if len(animations) > 0:
 			for gif in animations:
-				bot.send_document(my_id, gif.link)
+				last = bot.send_document(my_id, gif.link).message_id
 			
 		if len(docs) > 0:
 			for doc in docs:
-				bot.send_document(my_id, doc.link)
+				last = bot.send_document(my_id, doc.link).message_id
+
+		bot.edit_message_reply_markup(my_id, last, reply_markup = create_markup(post.link[19:]))
 	except Exception as e:
 		alarm(e, create_href(post.link, post.source_name))
+	
+def create_markup(data, liked = False):
+	markup = InlineKeyboardMarkup()
+	if not liked:
+		markup.row(InlineKeyboardButton('Лайк', callback_data = 'ln' + data), InlineKeyboardButton('Pocket', callback_data = 'p' + data))
+	else:
+		markup.row(InlineKeyboardButton('Лайкнуто', callback_data = 'ly' + data), InlineKeyboardButton('Pocket', callback_data = 'p' + data))
+	return markup
 	
 def send_even_long_message(text):
 	while len(text) > 4096:
 		bot.send_message(my_id, text[0:4096], parse_mode = 'HTML')
 		text = text[4096:]
-	bot.send_message(my_id, text, parse_mode = 'HTML')
+	return bot.send_message(my_id, text, parse_mode = 'HTML').message_id
 
 handler_mode = ''
 auth_args = [] #Лист аргументов для функции
