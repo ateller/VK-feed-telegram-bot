@@ -97,9 +97,13 @@ def send_post(post):
 			for doc in docs:
 				last = bot.send_document(my_id, doc.link).message_id
 
-		bot.edit_message_reply_markup(my_id, last, reply_markup = create_markup(post.link[19:]))
 	except Exception as e:
 		alarm(e, create_href(post.link, post.source_name))
+		
+	try:
+		bot.edit_message_reply_markup(my_id, last, reply_markup = create_markup(post.link[19:]))
+	except Exception as e:
+		bot.send_message(my_id, 'Проблемный пост, на те твои кнопки', reply_markup = create_markup(post.link[19:]))
 	
 def create_markup(data, liked = False):
 	markup = InlineKeyboardMarkup()
@@ -164,5 +168,9 @@ def get_log_pass():
 def check_down():
 	global handler_mode
 	handler_mode = 'check_down'
-
-	bot.polling(none_stop = True, interval = 0, timeout = 20)
+	
+	while True:
+		try:
+			bot.polling(none_stop = True, interval = 0, timeout = 20)
+		except Exception:
+			pass

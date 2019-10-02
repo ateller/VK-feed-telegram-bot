@@ -79,7 +79,7 @@ class post:
 					t = attachment['poll']['end_date']
 					
 					if t != 0:
-						poll.link += ' до ' + utc_3(datetime.fromtimestamp(t)).strftime('%H:%M %d.%m.%Y')
+						poll.link += ' до ' + utc_3(datetime.datetime.fromtimestamp(t)).strftime('%H:%M %d.%m.%Y')
 					
 					self.media.append(poll)
 					
@@ -144,8 +144,7 @@ def replace_vk_hidden_links(text):
 	return text
 	
 def utc_3(dt):
-	dt.hour += 3
-	return dt
+	return dt + datetime.timedelta(hours = 3)
 
 def handle_dict(dict):
 	global start
