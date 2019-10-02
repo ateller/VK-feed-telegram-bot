@@ -163,7 +163,7 @@ def handle_dict(dict):
 		
 def check_ignore(text):
 	for i in ignore:
-		if text.find(i) != -1:
+		if i in text:
 			return True
 	return False
 #Список слов, которые я не хочу видеть у себя в ленте
