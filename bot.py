@@ -172,5 +172,5 @@ def check_down():
 	while True:
 		try:
 			bot.polling(none_stop = True, interval = 0, timeout = 20)
-		except Exception:
-			pass
+		except Exception as e:
+			alarm(e)
