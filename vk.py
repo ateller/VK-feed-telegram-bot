@@ -24,7 +24,7 @@ class post:
 		self.text += create_href(self.link, 'пишетъ')
 		
 		self.text += ':\n\n'
-		self.text += replace_vk_hidden_links(dict_post['text'])
+		self.text += replace_vk_hidden_links(fix_html(dict_post['text']))
 		
 		self.media = []
 		if 'attachments' in dict_post:
@@ -130,7 +130,12 @@ def button_handler(call):
 				bot.answer_callback_query(call.id, 'Добавлено в покет')
 		except Exception as e:
 			alarm(e)
-		
+
+def fix_html(text):
+	text = text.replace('<', '&lt')
+	text = text.replace('>', '&gt')
+	return text
+			
 def create_link(post_id, group_id):
 	link = 'https://vk.com/wall' + str(group_id) + '_' + str(post_id) #Делаем ссылку на группу
 	return link
@@ -185,7 +190,6 @@ def check_wall():
 			handle_dict(vk.newsfeed.get(filters = 'post', return_banned = 0, start_time = start))
 		except Exception as e:
 			alarm(e)
-			time.sleep(60)
 			handle_dict(vk.newsfeed.get(filters = 'post', return_banned = 0, start_time = start))
 		time.sleep(1)
 #Раз в секунду просим новые посты

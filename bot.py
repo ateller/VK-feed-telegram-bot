@@ -23,10 +23,11 @@ def two_fact():	#Ввод кода двухфакторной аутентифи
 	
 def alarm(ex, link = None):
 	print(str(ex))
+	time.sleep(60)
 	if link is None:
-		text = str(ex)
+		text = "EXCEPTION: " + str(ex)
 	else:
-		text = "Ошибка при отправке поста " + link + '\n\n' + str(ex)
+		text = "EXCEPTION. Ошибка при отправке поста " + link + '\n\n' + str(ex)
 	send_even_long_message(text)
 
 def send_post(post):
