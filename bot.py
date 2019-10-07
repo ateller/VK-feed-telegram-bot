@@ -1,5 +1,6 @@
 import telebot
 import os
+import time
 
 from config import token, my_id
 from telebot.types import InputMediaPhoto, InlineKeyboardMarkup, InlineKeyboardButton
