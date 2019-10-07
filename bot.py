@@ -1,5 +1,6 @@
 import telebot
 import os
+import time
 
 from telebot import apihelper
 from config import token, prox_ip, my_id
