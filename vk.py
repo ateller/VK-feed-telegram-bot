@@ -22,7 +22,7 @@ class post:
 			self.source_name = find_name(groups, profiles, dict_post['source_id'])
 			self.link = create_link(dict_post['post_id'], dict_post['source_id'])
 		
-		self.text += self.source_name + ' '
+		self.text += fix_html(self.source_name) + ' '
 		self.text += create_href(self.link, 'пишетъ')
 		
 		self.text += ':\n\n'
