@@ -1,7 +1,7 @@
 import vk_api
 import pprint
 from config import login, passw, ignore, my_id #Должен быть файл config.py, в нем логин, пароль от вк, список слов для игнора, токен бота, id чата, куда все скидывать, ключ и токен от покета и айпи прокси
-from bot import bot, two_fact, send_post, check_down, create_href, get_log_pass, alarm, create_markup
+from bot import bot, two_fact, send_post, check_down, create_href, get_log_pass, alarm, create_markup, fix_html
 from threading import Thread
 from getpocket import p
 import time
@@ -132,11 +132,6 @@ def button_handler(call):
 		except Exception as e:
 			alarm(e)
 
-def fix_html(text):
-	text = text.replace('<', '&lt')
-	text = text.replace('>', '&gt')
-	return text
-			
 def create_link(post_id, group_id):
 	link = 'https://vk.com/wall' + str(group_id) + '_' + str(post_id) #Делаем ссылку на группу
 	return link
