@@ -21,13 +21,18 @@ def two_fact():	#Ввод кода двухфакторной аутентифи
 	auth_args.append(False) #Второй аргумент
 	return auth_args
 	
+def fix_html(text):
+	text = text.replace('<', '&lt')
+	text = text.replace('>', '&gt')
+	return text
+	
 def alarm(ex, link = None):
 	print(str(ex))
 	time.sleep(60)
 	if link is None:
-		text = "EXCEPTION: " + str(ex)
+		text = "EXCEPTION: " + fix_html(str(ex))
 	else:
-		text = "EXCEPTION. Ошибка при отправке поста " + link + '\n\n' + str(ex)
+		text = "EXCEPTION. Ошибка при отправке поста " + link + '\n\n' + fix_html(str(ex))
 	send_even_long_message(text)
 
 def send_post(post):
