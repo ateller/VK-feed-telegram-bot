@@ -125,12 +125,14 @@ def send_post(post):
 	except Exception as e:
 		alarm(e, create_href(post.link, post.source_name))
 	
-def create_markup(data, liked = False):
+def create_markup(data, liked = 0):
 	markup = InlineKeyboardMarkup()
-	if not liked:
+	if liked == 0:
 		markup.row(InlineKeyboardButton('Лайк', callback_data = 'ln' + data), InlineKeyboardButton('Pocket', callback_data = 'p' + data))
-	else:
+	elif liked == 1:
 		markup.row(InlineKeyboardButton('Лайкнуто', callback_data = 'ly' + data), InlineKeyboardButton('Pocket', callback_data = 'p' + data))
+	else:
+		markup.row(InlineKeyboardButton('Удалено', callback_data = 'ld' + data), InlineKeyboardButton('Pocket', callback_data = 'p' + data))
 	return markup
 	
 def send_even_long_message(text, markup = None):

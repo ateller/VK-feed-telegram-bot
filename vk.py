@@ -113,24 +113,30 @@ def button_handler(call):
 				if vk.likes.isLiked(type = 'post', owner_id = source_id, item_id = post_id)['liked'] == 0:	#Если запись не лайкнута
 					if call.data[1] == 'n':																	#И кнопка соотвествует
 						vk.likes.add(type = 'post', owner_id = source_id, item_id = post_id)				#То лайкаем, и меняем кнопку
-						bot.edit_message_reply_markup(my_id, call.message.message_id, reply_markup = create_markup(call.data[2:], liked = True))
+						bot.edit_message_reply_markup(my_id, call.message.message_id, reply_markup = create_markup(call.data[2:], liked = 1))
 						bot.answer_callback_query(call.id, 'Лайкнуто')
 					elif call.data[1] == 'y':																#А если кнопка лжет, приводим кнопку в соответствие и уведомляем. Ниже аналогично
-						bot.edit_message_reply_markup(my_id, call.message.message_id, reply_markup = create_markup(call.data[2:], liked = False))
+						bot.edit_message_reply_markup(my_id, call.message.message_id, reply_markup = create_markup(call.data[2:], liked = 0))
 						bot.answer_callback_query(call.id, 'А ты уже убрал лайк в вк, лол')
+					elif call.data[1] == 'd':
+						bot.answer_callback_query(call.id, 'Потерли пост, всё уже')
 				else:
 					if call.data[1] == 'y':
 						vk.likes.delete(type = 'post', owner_id = source_id, item_id = post_id)
-						bot.edit_message_reply_markup(my_id, call.message.message_id, reply_markup = create_markup(call.data[2:], liked = False))
+						bot.edit_message_reply_markup(my_id, call.message.message_id, reply_markup = create_markup(call.data[2:], liked = 0))
 						bot.answer_callback_query(call.id, 'Лайк убран')
 					elif call.data[1] == 'n':
-						bot.edit_message_reply_markup(my_id, call.message.message_id, reply_markup = create_markup(call.data[2:], liked = True))
+						bot.edit_message_reply_markup(my_id, call.message.message_id, reply_markup = create_markup(call.data[2:], liked = 1))
 						bot.answer_callback_query(call.id, 'А ты уже лайкнул в вк, лол')
 			elif call.data[0] == 'p':
 				p.add('https://vk.com/wall' + call.data[1:])
 				bot.answer_callback_query(call.id, 'Добавлено в покет')
 		except Exception as e:
-			alarm(e)
+			if '[100] One of the parameters specified was missing or invalid: object not found' in str(e):
+				bot.edit_message_reply_markup(my_id, call.message.message_id, reply_markup = create_markup(call.data[2:], liked = 2))
+				bot.answer_callback_query(call.id, 'Опа, а пост потерли')
+			else:
+				alarm(e)
 
 def create_link(post_id, group_id):
 	link = 'https://vk.com/wall' + str(group_id) + '_' + str(post_id) #Делаем ссылку на группу
