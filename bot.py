@@ -13,13 +13,29 @@ def two_fact():	#Ввод кода двухфакторной аутентифи
 	global handler_mode
 	handler_mode = 'two_factor'
 	
-	bot.send_message(my_id, 'СЛЫШ ВВОДИ') #Приглашаем пользователя (меня) ввести код
+	bot.send_message(my_id, 'СЛЫШ ВВОДИ КОД ИЛИ ЦИФРЫ НОМЕРА ТЕЛЕФОНА') #Приглашаем пользователя (меня) ввести код
 	
 	bot.polling() #Ожидаем
 	
 	bot.send_message(my_id, 'ПРИНЯТО')
 	auth_args.append(False) #Второй аргумент
 	return auth_args
+
+def cap_handl(captcha):
+
+	global auth_args
+	auth_args = []
+
+	global handler_mode
+	handler_mode = 'captcha'
+
+	bot.send_document(my_id, captcha.get_url(), 'СЛЫШ ВВОДИ С КАРТИНКИ') #Приглашаем пользователя (меня) ввести капчу
+
+	bot.polling() #Ожидаем
+
+	bot.send_message(my_id, 'ПРИНЯТО')
+
+	captcha.try_again(key=auth_args[0])
 	
 def fix_html(text):
 	text = text.replace('<', '&lt')
@@ -137,6 +153,10 @@ if len(upd) > 0:
 def handle_everything(message):
 	if message.from_user.id == my_id:
 		if handler_mode == 'two_factor':
+			auth_args.append(message.text)
+			bot.delete_message(my_id, message.message_id)
+			bot.stop_polling() #Выключаем ожидание
+		elif handler_mode == 'captcha':
 			auth_args.append(message.text)
 			bot.delete_message(my_id, message.message_id)
 			bot.stop_polling() #Выключаем ожидание

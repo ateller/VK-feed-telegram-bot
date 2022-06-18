@@ -1,6 +1,6 @@
 import vk_api
 from config import ignore, my_id #Должен быть файл config.py, в нем список слов для игнора, токен бота, id чата, куда все скидывать и ключ и токен от покета
-from bot import bot, two_fact, send_post, check_down, create_href, get_log_pass, alarm, create_markup, fix_html
+from bot import bot, two_fact, cap_handl, send_post, check_down, create_href, get_log_pass, alarm, create_markup, fix_html
 from threading import Thread
 from getpocket import p
 
@@ -190,7 +190,7 @@ def check_wall():
 #Раз в секунду просим новые посты
 
 log_pass = get_log_pass()
-vk_session = vk_api.VkApi(log_pass[0], log_pass[1], auth_handler = two_fact)
+vk_session = vk_api.VkApi(log_pass[0], log_pass[1], auth_handler = two_fact, captcha_handler = cap_handl)
 
 vk_session.auth()
 #Создаем сессию
