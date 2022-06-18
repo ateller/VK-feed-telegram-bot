@@ -186,8 +186,8 @@ def check_wall():
 		except Exception as e:
 			alarm(e)
 			handle_dict(vk.newsfeed.get(filters = 'post', return_banned = 0, start_time = start))
-		time.sleep(1)
-#Раз в секунду просим новые посты
+		time.sleep(10)
+#Раз в десять сек просим новые посты
 
 log_pass = get_log_pass()
 vk_session = vk_api.VkApi(log_pass[0], log_pass[1], auth_handler = two_fact, captcha_handler = cap_handl)
