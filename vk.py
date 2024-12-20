@@ -1,5 +1,5 @@
 import vk_api
-from config import ignore, my_id #Должен быть файл config.py, в нем список слов для игнора, токен бота, id чата, куда все скидывать и ключ и токен от покета
+from config import ignore, my_id, vk_app_id #Должен быть файл config.py, в нем список слов для игнора, токен бота, id чата, куда все скидывать и ключ и токен от покета
 from bot import bot, two_fact, cap_handl, send_post, check_down, create_href, get_log_pass, alarm, create_markup, fix_html
 from threading import Thread
 from getpocket import p
@@ -155,8 +155,26 @@ def utc_3(dt):
 
 def handle_dict(dict):
 	global start
+	global last_post
+	global last_source
+
 	count = len(dict['items'])
 	if count > 0:
+		#print('start ' + str(start));
+		#print('date ' + str(dict['items'][0]['date']))
+		#print('source id ' + str(dict['items'][0]['source_id']))
+		#print('post id ' + str(dict['items'][0]['post_id']))
+		
+		if (dict['items'][0]['source_id'] == last_source) and (dict['items'][0]['post_id'] == last_post):
+			time.sleep(50)
+			return
+
+		last_source = dict['items'][0]['source_id']
+		last_post = dict['items'][0]['post_id']
+
+		#print('last source ' + str(last_source))
+		#print('last post ' + str(last_post))
+
 		start = dict['items'][0]['date'] + 1 #Потом будем запрашивать посты со следующей секунды после последнего поста в этой пачке
 		while count > 0:
 			temp = dict['items'][count - 1] #Текущий пост
@@ -196,7 +214,7 @@ def check_wall():
 #Раз в десять сек просим новые посты
 
 log_pass = get_log_pass()
-vk_session = vk_api.VkApi(log_pass[0], log_pass[1], auth_handler = two_fact, captcha_handler = cap_handl)
+vk_session = vk_api.VkApi(log_pass[0], log_pass[1], app_id=vk_app_id, auth_handler = two_fact, captcha_handler = cap_handl)
 
 vk_session.auth()
 #Создаем сессию
@@ -204,6 +222,8 @@ vk_session.auth()
 vk = vk_session.get_api() #Получаем доступ к методам
 
 start = 1568572461 #Рандомное время
+last_source = 0
+last_post = 0
 handle_dict(vk.newsfeed.get(filters = 'post', return_banned = 0, start_time = start, count = 1)) #Прогоняем последнюю, чтобы время установилось
 
 thread1 = Thread(target=check_wall) #Пересылка записей
